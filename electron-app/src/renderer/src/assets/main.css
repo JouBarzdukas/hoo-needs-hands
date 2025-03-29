@@ -1,10 +1,11 @@
 @import "./base.css";
 
 :root {
-  --primary-color: #3498db;
-  --primary-dark: #2980b9;
-  --primary-light: #5dade2;
-  --secondary-color: #2ecc71;
+  --primary-color: #0084ff;
+  --primary-dark: #0a1c3d;
+  --primary-light: #00e2e2;
+  --secondary-color: #6e2feb;
+  --accent-color: #ff3a8c;
   --text-color: #ecf0f1;
   --text-secondary: #bdc3c7;
   --inactive-color: #95a5a6;
@@ -111,10 +112,41 @@ html {
   background: transparent;
 }
 
-.audio-ring {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
+.log-container::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.log-entry {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: rgba(40, 40, 40, 0.5);
+  transition: all var(--transition-speed) ease;
+  animation: fadeIn 0.3s ease-out;
+  border-left: 3px solid transparent;
+}
+
+.log-entry.input {
+  background-color: rgba(0, 132, 255, 0.15);
+  border-left: 3px solid rgba(0, 132, 255, 0.5);
+}
+
+.log-entry.response {
+  background-color: rgba(110, 47, 235, 0.1);
+  border-left: 3px solid rgba(110, 47, 235, 0.5);
+}
+
+.log-entry-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.log-entry-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--text-secondary);
   opacity: 0.7;
   transition: transform 0.1s ease-out;
 }
@@ -133,11 +165,15 @@ html {
   animation: pulse 2s infinite 0.3s;
 }
 
-.ring-3 {
-  width: 180px;
-  height: 180px;
-  border: 2px solid #3498db;
-  animation: pulse 2s infinite 0.6s;
+.status-indicator {
+  width: 100%;
+  padding: 8px 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background-color: transparent !important;
+  border-top: none;
+  z-index: 10;
 }
 
 @keyframes pulse {

@@ -22,6 +22,8 @@ function App(): JSX.Element {
   const logContainerRef = useRef<HTMLDivElement | null>(null)
   const blobRef = useRef<HTMLDivElement | null>(null)
   const blobCoreRef = useRef<HTMLDivElement | null>(null)
+  const blobEdgeRef = useRef<HTMLDivElement | null>(null)
+  const blobHighlightRef = useRef<HTMLDivElement | null>(null)
   // Add a ref to track if we're currently processing a toggle
   const isTogglingRef = useRef(false)
 
@@ -38,42 +40,68 @@ function App(): JSX.Element {
     window.electron.ipcRenderer.send("resize-window", height)
   }, [isExpanded])
 
-  // Add effect for dynamic color changes based on audio level
+  // Add effect for dynamic color changes based on audio level - more responsive
   useEffect(() => {
     if (!blobCoreRef.current) return
 
     if (isListening) {
-      // Calculate color values based on audio level
-      const brightness = 1.1 + Math.min(0.3, audioLevel * 0.003)
-      const contrast = 1.2 + Math.min(0.3, audioLevel * 0.003)
+      // Calculate color values based on audio level - more responsive
+      const brightness = 1.1 + Math.min(0.4, audioLevel * 0.006)
+      const contrast = 1.2 + Math.min(0.4, audioLevel * 0.006)
 
-      // Apply dynamic color filter
+      // Apply dynamic color filter - more responsive
       blobCoreRef.current.style.filter = `brightness(${brightness}) contrast(${contrast})`
 
-      // Adjust box shadow intensity based on audio level
-      const blueIntensity = 0.3 + Math.min(0.3, audioLevel * 0.003)
-      const purpleIntensity = 0.2 + Math.min(0.3, audioLevel * 0.003)
-      const cyanIntensity = 0.2 + Math.min(0.3, audioLevel * 0.003)
+      // Adjust box shadow intensity based on audio level - more responsive
+      const blueIntensity = 0.4 + Math.min(0.4, audioLevel * 0.006)
+      const purpleIntensity = 0.3 + Math.min(0.4, audioLevel * 0.006)
+      const cyanIntensity = 0.4 + Math.min(0.4, audioLevel * 0.006)
 
       blobCoreRef.current.style.boxShadow = `
-        0 0 10px rgba(58, 128, 255, ${blueIntensity}), 
-        0 0 20px rgba(157, 78, 221, ${purpleIntensity}), 
-        inset 0 0 15px rgba(24, 230, 230, ${cyanIntensity})
+        0 0 10px rgba(0, 132, 255, ${blueIntensity}), 
+        0 0 20px rgba(110, 47, 235, ${purpleIntensity}), 
+        inset 0 0 15px rgba(0, 226, 226, ${cyanIntensity})
       `
+
+      // Make the edge more responsive to audio
+      if (blobEdgeRef.current) {
+        const edgeOpacity = 0.2 + Math.min(0.3, audioLevel * 0.005)
+        blobEdgeRef.current.style.opacity = edgeOpacity.toString()
+
+        // Adjust rotation speed based on audio level
+        const rotationDuration = Math.max(5, 15 - audioLevel * 0.1)
+        blobEdgeRef.current.style.animationDuration = `${rotationDuration}s`
+      }
+
+      // Make the highlight more responsive
+      if (blobHighlightRef.current) {
+        const highlightOpacity = 0.6 + Math.min(0.4, audioLevel * 0.005)
+        blobHighlightRef.current.style.opacity = highlightOpacity.toString()
+      }
     } else {
       blobCoreRef.current.style.filter = "brightness(1.1) contrast(1.2)"
       blobCoreRef.current.style.boxShadow =
-        "0 0 10px rgba(58, 128, 255, 0.3), 0 0 20px rgba(157, 78, 221, 0.2), inset 0 0 15px rgba(24, 230, 230, 0.2)"
+        "0 0 10px rgba(0, 132, 255, 0.4), 0 0 20px rgba(110, 47, 235, 0.3), inset 0 0 15px rgba(0, 226, 226, 0.4)"
+
+      if (blobEdgeRef.current) {
+        blobEdgeRef.current.style.opacity = "0.2"
+        blobEdgeRef.current.style.animationDuration = "15s"
+      }
+
+      if (blobHighlightRef.current) {
+        blobHighlightRef.current.style.opacity = "0.6"
+      }
     }
   }, [isListening, audioLevel])
 
-  // Update blob scaling based on audio level only
+  // Update blob scaling based on audio level - more responsive
   useEffect(() => {
     if (!blobRef.current) return
 
     if (isListening) {
-      // Apply subtle scaling based on audio level
-      blobRef.current.style.transform = `scale(${1 + audioLevel * 0.002})`
+      // Apply more responsive scaling based on audio level
+      const scale = 1 + Math.min(0.15, audioLevel * 0.004)
+      blobRef.current.style.transform = `scale(${scale})`
     } else {
       blobRef.current.style.transform = "scale(1)"
     }
@@ -163,7 +191,7 @@ function App(): JSX.Element {
     setAudioLevel(0)
   }
 
-  // Update the analyzeAudio function to capture audio level but not render bars
+  // Update the analyzeAudio function to be more responsive
   const analyzeAudio = () => {
     if (!analyserRef.current) return
 
@@ -186,16 +214,16 @@ function App(): JSX.Element {
       // Normalize to 0-100 range with more amplification
       const normalizedLevel = Math.min(100, Math.max(0, avg * 2.5))
 
-      // Normalize to 0-100 range and apply more amplification
-      const normalizedLevel = Math.min(100, Math.max(0, avg * 3))
+      // Normalize to 0-100 range and apply more amplification for better responsiveness
+      const normalizedLevel = Math.min(100, Math.max(0, avg * 4)) // Increased from 3 to 4
 
       // Apply smoother transitions but ensure it returns to calm state
       setAudioLevel((prevLevel) => {
         // If current level is lower, return to calm state faster
         if (normalizedLevel < prevLevel) {
-          return prevLevel * 0.8 + normalizedLevel * 0.2 // Faster decay
+          return prevLevel * 0.7 + normalizedLevel * 0.3 // Faster decay (was 0.8/0.2)
         } else {
-          return prevLevel * 0.5 + normalizedLevel * 0.5 // Faster response to increases
+          return prevLevel * 0.4 + normalizedLevel * 0.6 // Faster response to increases (was 0.5/0.5)
         }
       })
 
@@ -307,9 +335,9 @@ function App(): JSX.Element {
         <div className={`fluid-blob-container ${isListening ? "active" : "inactive"}`} onClick={toggleMicrophone}>
           <div className="fluid-blob" ref={blobRef}>
             <div className="blob-core" ref={blobCoreRef}></div>
-            <div className="blob-highlight"></div>
+            <div className="blob-highlight" ref={blobHighlightRef}></div>
             <div className="blob-surface"></div>
-            <div className="blob-edge"></div> {/* New edge element for oily effect */}
+            <div className="blob-edge" ref={blobEdgeRef}></div>
           </div>
         </div>
       </div>
@@ -359,11 +387,7 @@ function App(): JSX.Element {
         </div>
       )}
 
-      <div className="status-indicator">
-        {isListening
-          ? `Listening${audioLevel > 30 ? " - Audio level: " + Math.round(audioLevel) : "..."}`
-          : "Click orb to start"}
-      </div>
+      {/* Removed status indicator */}
     </div>
   )
 }

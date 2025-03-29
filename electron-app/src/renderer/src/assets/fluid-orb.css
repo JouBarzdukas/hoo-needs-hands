@@ -1,28 +1,34 @@
 :root {
-    /* New color palette based on the oily/iridescent reference */
-    --dark-base: #121218;
-    --blue-highlight: #3a80ff;
-    --purple-highlight: #9d4edd;
-    --pink-highlight: #ff3c8e;
-    --orange-highlight: #ff7d3c;
-    --cyan-highlight: #18e6e6;
+    /* Color palette inspired by Meta AI and Siri with a twist */
+    --deep-blue: #0a1c3d;
+    --electric-blue: #0084ff;
+    --vibrant-purple: #6e2feb;
+    --hot-pink: #ff3a8c;
+    --cyan-accent: #00e2e2;
+    --subtle-glow: rgba(0, 132, 255, 0.5);
   
     /* Gradient combinations */
-    --oily-gradient-1: linear-gradient(135deg, var(--dark-base) 0%, #1a1a24 100%);
-    --oily-gradient-2: radial-gradient(circle at 30% 30%, var(--dark-base) 0%, #1a1a24 70%, #252536 100%);
-    --oily-highlight-gradient: linear-gradient(
-      135deg,
-      var(--blue-highlight),
-      var(--purple-highlight),
-      var(--pink-highlight)
+    --orb-gradient: radial-gradient(
+      circle at 30% 30%,
+      var(--electric-blue) 0%,
+      var(--vibrant-purple) 60%,
+      var(--deep-blue) 100%
     );
-    --edge-highlight: linear-gradient(135deg, var(--cyan-highlight), var(--pink-highlight), var(--orange-highlight));
+    --surface-gradient: linear-gradient(135deg, var(--electric-blue), var(--vibrant-purple), var(--hot-pink));
+    --edge-highlight: conic-gradient(
+      transparent 0deg,
+      var(--cyan-accent) 60deg,
+      var(--electric-blue) 120deg,
+      var(--vibrant-purple) 240deg,
+      var(--hot-pink) 300deg,
+      transparent 360deg
+    );
   }
   
   /* Fluid Blob Styles */
   .fluid-blob-container {
     position: relative;
-    width: 80px; /* Slightly smaller for less intrusive look */
+    width: 80px;
     height: 80px;
     cursor: pointer;
     z-index: 10;
@@ -35,7 +41,7 @@
   
   .fluid-blob {
     position: relative;
-    width: 60px; /* Smaller orb */
+    width: 60px;
     height: 60px;
     transition: transform 0.2s ease-out;
     will-change: transform;
@@ -50,12 +56,12 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--oily-gradient-2);
+    background: var(--orb-gradient);
     border-radius: 50%;
-    box-shadow: 0 0 10px rgba(58, 128, 255, 0.3), 0 0 20px rgba(157, 78, 221, 0.2), inset 0 0 15px rgba(24, 230, 230, 0.2);
+    box-shadow: 0 0 10px rgba(0, 132, 255, 0.4), 0 0 20px rgba(110, 47, 235, 0.3), inset 0 0 15px rgba(0, 226, 226, 0.4);
     filter: brightness(1.1) contrast(1.2);
     animation: blob-pulse 6s infinite alternate ease-in-out;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
   }
   
   /* Subtle iridescent highlight */
@@ -65,10 +71,10 @@
     left: 20%;
     width: 40%;
     height: 40%;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     filter: blur(4px);
-    opacity: 0.5;
+    opacity: 0.6;
     animation: highlight-move 10s infinite alternate ease-in-out;
   }
   
@@ -82,14 +88,15 @@
     background: linear-gradient(
       135deg,
       transparent 20%,
-      rgba(58, 128, 255, 0.1) 40%,
-      rgba(157, 78, 221, 0.1) 60%,
-      rgba(255, 60, 142, 0.1) 80%,
+      rgba(0, 132, 255, 0.15) 40%,
+      rgba(110, 47, 235, 0.15) 60%,
+      rgba(255, 58, 140, 0.15) 80%,
       transparent 100%
     );
     border-radius: 50%;
     animation: surface-rotate 20s linear infinite;
-    opacity: 0.7;
+    opacity: 0.8;
+    mix-blend-mode: screen;
   }
   
   /* Edge highlight to create the oily look */
@@ -99,16 +106,10 @@
     left: -10%;
     width: 120%;
     height: 120%;
-    background: conic-gradient(
-      transparent 0deg,
-      var(--blue-highlight) 90deg,
-      var(--purple-highlight) 180deg,
-      var(--pink-highlight) 270deg,
-      transparent 360deg
-    );
+    background: var(--edge-highlight);
     border-radius: 50%;
     filter: blur(8px);
-    opacity: 0.15;
+    opacity: 0.2;
     mix-blend-mode: screen;
     animation: edge-rotate 15s linear infinite;
   }
@@ -120,11 +121,11 @@
   
   .fluid-blob-container.active .blob-core {
     filter: brightness(1.3) contrast(1.3);
-    box-shadow: 0 0 15px rgba(58, 128, 255, 0.5), 0 0 30px rgba(157, 78, 221, 0.3), inset 0 0 20px rgba(24, 230, 230, 0.3);
+    box-shadow: 0 0 15px rgba(0, 132, 255, 0.6), 0 0 30px rgba(110, 47, 235, 0.4), inset 0 0 20px rgba(0, 226, 226, 0.5);
   }
   
   .fluid-blob-container.active .blob-edge {
-    opacity: 0.25;
+    opacity: 0.3;
     animation: edge-rotate 8s linear infinite;
   }
   
@@ -147,35 +148,35 @@
     0% {
       top: 15%;
       left: 20%;
-      opacity: 0.5;
+      opacity: 0.6;
       width: 40%;
       height: 40%;
     }
     25% {
       top: 10%;
       left: 25%;
-      opacity: 0.6;
+      opacity: 0.7;
       width: 35%;
       height: 35%;
     }
     50% {
       top: 20%;
       left: 30%;
-      opacity: 0.7;
+      opacity: 0.8;
       width: 30%;
       height: 30%;
     }
     75% {
       top: 25%;
       left: 20%;
-      opacity: 0.6;
+      opacity: 0.7;
       width: 35%;
       height: 35%;
     }
     100% {
       top: 15%;
       left: 15%;
-      opacity: 0.5;
+      opacity: 0.6;
       width: 40%;
       height: 40%;
     }
