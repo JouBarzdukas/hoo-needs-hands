@@ -8,64 +8,37 @@ def browser_agent(state: dict) -> Command:
     We only run once per user request. If 'browser_agent_executed' is set, we skip.
     Otherwise, we do the step, possibly calling browseruse_tool exactly once.
     """
-    # If this agent already executed, skip.
+    # If this agent already executed, skip
     if state.get("browser_agent_executed"):
-        return Command(goto="master_agent", update=state)
+        return Command(goto="END", update=state)
 
-    # Mark that we are now "in use," so we won't re-run.
+    # Mark that we are now "in use," so we won't re-run
     state["browser_agent_executed"] = True
     
-    # Use the correct model name.
-    llm = ChatOpenAI(model="gpt-4", temperature=0)
-    llm_with_tools = llm.bind_tools([browseruse_tool])
-    
+    # Get the command from the current_command in state
     current_command = state.get("current_command", "")
+    if not current_command:
+        # If no current_command, try to get it from the last message
+        messages = state.get("messages", [])
+        if messages:
+            current_command = messages[0].get("content", "")
     
-    # Prompt to encourage the LLM to optionally call the tool once.
-    prompt = (
-        f"You are the Browser agent. The user wants to: '{current_command}'.\n"
-        "You may call 'browseruse_tool' exactly once (if needed) to perform a browser action. "
-        "After that, just summarize. If no browser action is relevant, simply respond with a text summary.\n"
-        "Example usage:\n"
-        "tool_call: browseruse_tool {\"command\": \"search cat videos\"}\n"
-    )
+    print(f"DEBUG: Current command in browser_agent: '{current_command}'")
     
-    messages_for_prompt = state.get("messages", []) + [
-        {"role": "user", "content": prompt}
-    ]
-
-    # Let the LLM respond with either plain text or a single tool_call:
-    message = llm_with_tools.invoke(messages_for_prompt)
+    if not current_command:
+        content = "Browser Agent: No command received."
+        state["messages"].append({"role": "assistant", "content": content})
+        return Command(goto="END", update=state)
     
-    # Debug: print the raw message output.
-    print("DEBUG: Raw browser agent message output:", message)
+    # Execute the browser tool directly with the command
+    try:
+        result = browseruse_tool(current_command)
+        content = f"Browser Agent: Executed command '{current_command}'. Result: {result}"
+    except Exception as e:
+        content = f"Browser Agent: Error executing command: {str(e)}"
     
-    # Attempt to get content from the LLM response.
-    content = getattr(message, "content", "")
-    
-    # If no content was returned and a tool call is present, execute the tool.
-    if not content and hasattr(message, "additional_kwargs") and message.additional_kwargs.get("tool_calls"):
-        tool_call = message.additional_kwargs["tool_calls"][0]
-        if tool_call.get("name") == "browseruse_tool":
-            args_dict = tool_call.get("args", {})
-            # Check for "v__args" key first, then fallback to "command"
-            if "v__args" in args_dict:
-                args_list = args_dict.get("v__args", [])
-            elif "command" in args_dict:
-                args_list = [args_dict.get("command")]
-            else:
-                args_list = []
-            tool_result = browseruse_tool({"v__args": args_list})  # Pass as dict
-            content = f"Browser Agent executed tool: {tool_result}"
-    
-    # Fallback if still no content.
-    if not content:
-        content = "Browser Agent: No further response."
-    else:
-        content = content.strip()
-    
-    # Record the response.
+    # Record the response
     state["messages"].append({"role": "assistant", "content": content})
 
-    # Return control to master agent.
-    return Command(goto="master_agent", update=state)
+    # Return control to END
+    return Command(goto="END", update=state)

@@ -4,19 +4,21 @@ from browser_use import Agent as BrowserAgent
 from langchain_openai import ChatOpenAI
 
 @tool
-def browseruse_tool(args: dict) -> str:
+def browseruse_tool(command: str) -> str:
     """
     Executes a browser command using the browser-use tool.
-    Expects args to be a dict with a 'command' key.
-    If the key 'v__args' is present, use its first element as the command.
+    Args:
+        command: The command to execute in the browser
     """
-    if "v__args" in args:
-        command_list = args["v__args"]
-        command_str = command_list[0] if command_list else ""
-    else:
-        command_str = args.get("command", "")
+    print(f"DEBUG: Command received in browseruse_tool: '{command}'")
+    
+    # Format the command to be more explicit
+    formatted_command = command
+    
+    print(f"DEBUG: Formatted command being passed to BrowserAgent: '{formatted_command}'")
     
     # Instantiate and run the BrowserAgent synchronously.
-    agent = BrowserAgent(task=command_str, llm=ChatOpenAI(model="gpt-4o"))
-    result = agent.run()  # Assuming `run()` is a synchronous method.
+    agent = BrowserAgent(task=formatted_command, llm=ChatOpenAI(model="gpt-4o"))
+    # Run the async function in a synchronous context
+    result = asyncio.run(agent.run())
     return result

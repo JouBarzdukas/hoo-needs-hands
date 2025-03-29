@@ -1,6 +1,4 @@
 import sys
-from dotenv import load_dotenv
-load_dotenv()
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 
@@ -29,8 +27,8 @@ def build_graph() -> StateGraph:
       1) Start -> master_agent
       2) master_agent can route to one of db_agent, browser_agent, computer_agent
       3) Each agent can optionally call a single tool node
-      4) After the tool, return to master_agent
-      5) End when master_agent says done
+      4) After the tool, return to END
+      5) End when agent says done
     """
     graph_builder = StateGraph(State)
     graph_builder.add_node("master_agent", master_agent)
@@ -52,7 +50,7 @@ def build_graph() -> StateGraph:
         tools_condition,
         {
             "tools": "db_tools",
-            END: "master_agent"  # If no tool call is needed, jump back
+            END: END  # If no tool call is needed, end
         }
     )
     graph_builder.add_conditional_edges(
@@ -60,7 +58,7 @@ def build_graph() -> StateGraph:
         tools_condition,
         {
             "tools": "browser_tools",
-            END: "master_agent"
+            END: END
         }
     )
     graph_builder.add_conditional_edges(
@@ -68,14 +66,14 @@ def build_graph() -> StateGraph:
         tools_condition,
         {
             "tools": "computer_tools",
-            END: "master_agent"
+            END: END
         }
     )
     
-    # After tool execution, control returns to the master agent.
-    graph_builder.add_edge("db_tools", "master_agent")
-    graph_builder.add_edge("browser_tools", "master_agent")
-    graph_builder.add_edge("computer_tools", "master_agent")
+    # After tool execution, end the flow
+    graph_builder.add_edge("db_tools", END)
+    graph_builder.add_edge("browser_tools", END)
+    graph_builder.add_edge("computer_tools", END)
     
     return graph_builder.compile()
 
