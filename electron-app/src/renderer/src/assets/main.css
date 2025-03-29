@@ -6,7 +6,8 @@ body {
   justify-content: center;
   overflow: hidden;
   user-select: none;
-  background-color: #f5f5f5;
+  /* background-color: #f5f5f5; */
+  background: transparent;
   height: 100vh;
   margin: 0;
 }
