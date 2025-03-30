@@ -1,0 +1,28 @@
+# filepath: c:\Code\ForFun\Hoo\hoo-needs-hands\backend\requirements.txt
+
+# Environment variables
+python-dotenv>=0.20.0
+
+# Audio processing & wake word detection
+pvporcupine>=1.9.0
+PyAudio>=0.2.11
+sounddevice>=0.4.6
+
+# Audio file handling (wave is part of the Python stdlib)
+
+# OpenAI access & transcription
+openai>=0.27.0
+
+# Numerical processing
+numpy>=1.21.0
+
+# Langchain & related tools
+langchain_openai>=0.0.1    # adjust version as needed
+langgraph>=0.0.1           # adjust version as needed
+langchain_core>=0.0.1      # if maintained as separate from langchain
+browser_use>=0.0.1         # if this is an external dependency
+
+# Additional tools
+kokoro>=0.0.1              # check the correct package/version
+langchain_text_splitters>=0.0.1  # adjust version if needed
+langchain_community>=0.0.1       # adjust version if needed
