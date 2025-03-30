@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+import os
+load_dotenv()  # loads variables from .env file, including OPENAI_API_KEY
+
 from langchain_openai import ChatOpenAI
 from langgraph.types import Command
 
