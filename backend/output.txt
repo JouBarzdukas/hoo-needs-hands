@@ -1,0 +1,26 @@
+INFO     [browser_use] BrowserUse logging setup complete with level info
+INFO     [root] Anonymized telemetry enabled. See https://docs.browser-use.com/development/telemetry for more information.
+Graph visualization saved as 'graph.png' in the current directory.
+Wake word 'Jarvis' detected. Starting recording.
+Recording... Speak now. (Say 'blueberry' to finish recording)
+Stop keyword 'blueberry' detected.
+Voice command transcription: Can you store my Amazon password in my personal database? The password is dingleberry.
+
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+Segment 0: Please confirm the following task: Can you store my Amazon password in my personal database? The password is dingleberry.. Say yes or no.
+Waiting for confirmation...
+Confirmation response: Yes.
+
+Voice command obtained: Can you store my Amazon password in my personal database? The password is dingleberry.
+Should execute command: True
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+Segment 0: Perfect, I'll take care of that.
+Graph event: {'master_agent': {'messages': [{'role': 'user', 'content': 'Can you store my Amazon password in my personal database? The password is dingleberry.'}]}}
+Graph event: {'db_agent': {'messages': [{'role': 'user', 'content': 'Can you store my Amazon password in my personal database? The password is dingleberry.'}, AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_B5w9JU0Z9gb2nlGWhSRZeAgS', 'function': {'arguments': '{"sentence":"Can you store my Amazon password in my personal database? The password is dingleberry."}', 'name': 'store_sentence'}, 'type': 'function'}], 'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 32, 'prompt_tokens': 251, 'total_tokens': 283, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-2024-08-06', 'system_fingerprint': 'fp_de57b65c90', 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-3a2a91ec-64b4-4b00-bfb8-d49ee3ca5898-0', tool_calls=[{'name': 'store_sentence', 'args': {'sentence': 'Can you store my Amazon password in my personal database? The password is dingleberry.'}, 'id': 'call_B5w9JU0Z9gb2nlGWhSRZeAgS', 'type': 'tool_call'}], usage_metadata={'input_tokens': 251, 'output_tokens': 32, 'total_tokens': 283, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}})]}}
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+Segment 0: There was an error storing your sentence. Please try again.
+Graph event: {'db_tools': {'messages': [ToolMessage(content="Error storing sentence: name 'formatted_results' is not defined", name='store_sentence', tool_call_id='call_B5w9JU0Z9gb2nlGWhSRZeAgS')]}}
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+Segment 0: Task completed
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+Segment 0: Let me know if you need anything else

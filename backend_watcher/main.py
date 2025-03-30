@@ -6,8 +6,21 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from typing import AsyncGenerator
 import re
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+origin = [ 
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origin,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def process_line(line: str):
     """
