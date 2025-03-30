@@ -3,6 +3,7 @@ from langchain_core.tools import tool
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from voice.text_to_speech import text_to_speech
 
 # Initialize the vector store and embeddings
 embeddings = OpenAIEmbeddings()
@@ -38,9 +39,12 @@ def search_sentences(query: str, k: int = 1) -> str:
         results = vectorstore.similarity_search(query, k=1)
         # Format results
         formatted_results = "\n".join([f"- {doc.page_content}" for doc in results])
-        print(formatted_results)
+        var = f"The top result from your database is {formatted_results}"
+        text_to_speech(var)
+        # print(var)
         return f"Found {len(results)} similar sentences:\n{formatted_results}"
     except Exception as e:
+        text_to_speech("It seems like there was no match found for your query. Please refine your search or try a different query.")
         return f"Error searching sentences: {e}"
 
 @tool

@@ -103,7 +103,7 @@ def get_voice_command() -> tuple[bool, str, pyaudio.PyAudio, pvporcupine.Porcupi
             frames_per_buffer=porcupine.frame_length
         )
 
-        print("Listening for the wake word 'Jarvis'...")
+        # print("Listening for the wake word 'Jarvis'...")
         command = ""
         should_execute = False
         while True:

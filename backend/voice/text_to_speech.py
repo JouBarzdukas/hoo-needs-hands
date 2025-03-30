@@ -35,7 +35,7 @@ def random_auto_response() -> None:
     response = random.choice(responses)
     # Use the Kokoro TTS model to convert the response to speech.
     for i, (gs, ps, audio) in enumerate(pipeline(response, voice='af_heart')):
-        print(f"Auto-response {i}: {gs}")
+        print(f"Segment {i}: {gs}")
         sd.play(audio, 24000)
         sd.wait()  # Wait for playback to finish.
 if __name__ == '__main__':
