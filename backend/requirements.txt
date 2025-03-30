@@ -32,3 +32,6 @@ typing-extensions>=4.0.0
 langgraph>=0.0.1           # already included above
 openai>=0.27.0             # already included above
 pyaudio>=0.2.11            # already included above
+
+# browser agent dependencies
+chromadb>=0.3.21
