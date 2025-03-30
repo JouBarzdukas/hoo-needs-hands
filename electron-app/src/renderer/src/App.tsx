@@ -24,6 +24,7 @@ function App(): JSX.Element {
   const blobCoreRef = useRef<HTMLDivElement | null>(null)
   const blobEdgeRef = useRef<HTMLDivElement | null>(null)
   const blobHighlightRef = useRef<HTMLDivElement | null>(null)
+  const blobContainerRef = useRef<HTMLDivElement | null>(null)
   // Add a ref to track if we're currently processing a toggle
   const isTogglingRef = useRef(false)
 
@@ -40,22 +41,22 @@ function App(): JSX.Element {
     window.electron.ipcRenderer.send("resize-window", height)
   }, [isExpanded])
 
-  // Add effect for dynamic color changes based on audio level - more responsive
+  // Add effect for dynamic color changes based on audio level - balanced between v26 and v27
   useEffect(() => {
     if (!blobCoreRef.current) return
 
     if (isListening) {
-      // Calculate color values based on audio level - more responsive
-      const brightness = 1.1 + Math.min(0.4, audioLevel * 0.006)
-      const contrast = 1.2 + Math.min(0.4, audioLevel * 0.006)
+      // Calculate color values based on audio level - balanced
+      const brightness = 1.1 + Math.min(0.45, audioLevel * 0.006) // Increased effect
+      const contrast = 1.2 + Math.min(0.45, audioLevel * 0.006) // Increased effect
 
-      // Apply dynamic color filter - more responsive
+      // Apply dynamic color filter - balanced
       blobCoreRef.current.style.filter = `brightness(${brightness}) contrast(${contrast})`
 
-      // Adjust box shadow intensity based on audio level - more responsive
-      const blueIntensity = 0.4 + Math.min(0.4, audioLevel * 0.006)
-      const purpleIntensity = 0.3 + Math.min(0.4, audioLevel * 0.006)
-      const cyanIntensity = 0.4 + Math.min(0.4, audioLevel * 0.006)
+      // Adjust box shadow intensity based on audio level - balanced
+      const blueIntensity = 0.4 + Math.min(0.45, audioLevel * 0.006) // Increased effect
+      const purpleIntensity = 0.3 + Math.min(0.45, audioLevel * 0.006) // Increased effect
+      const cyanIntensity = 0.4 + Math.min(0.45, audioLevel * 0.006) // Increased effect
 
       blobCoreRef.current.style.boxShadow = `
         0 0 10px rgba(0, 132, 255, ${blueIntensity}), 
@@ -63,20 +64,31 @@ function App(): JSX.Element {
         inset 0 0 15px rgba(0, 226, 226, ${cyanIntensity})
       `
 
-      // Make the edge more responsive to audio
+      // Make the edge more responsive to audio - balanced
       if (blobEdgeRef.current) {
-        const edgeOpacity = 0.2 + Math.min(0.3, audioLevel * 0.005)
+        const edgeOpacity = 0.2 + Math.min(0.35, audioLevel * 0.005) // Increased effect
         blobEdgeRef.current.style.opacity = edgeOpacity.toString()
 
-        // Adjust rotation speed based on audio level
-        const rotationDuration = Math.max(5, 15 - audioLevel * 0.1)
+        // Adjust rotation speed based on audio level - more subtle
+        const rotationDuration = Math.max(12, 20 - audioLevel * 0.05) // Reduced from 0.1 to 0.05 and increased base duration
         blobEdgeRef.current.style.animationDuration = `${rotationDuration}s`
       }
 
-      // Make the highlight more responsive
+      // Make the highlight more responsive - balanced
       if (blobHighlightRef.current) {
-        const highlightOpacity = 0.6 + Math.min(0.4, audioLevel * 0.005)
+        const highlightOpacity = 0.6 + Math.min(0.4, audioLevel * 0.005) // Increased effect
         blobHighlightRef.current.style.opacity = highlightOpacity.toString()
+      }
+
+      // NEW: Adjust the outer glow based on audio level
+      if (blobContainerRef.current) {
+        // Create a dynamic style for the ::before pseudo-element
+        const glowOpacity = 0.3 + Math.min(0.6, audioLevel * 0.01)
+        const glowScale = 0.95 + Math.min(0.15, audioLevel * 0.003)
+
+        // Apply custom property to control the glow animation
+        blobContainerRef.current.style.setProperty("--glow-opacity", glowOpacity.toString())
+        blobContainerRef.current.style.setProperty("--glow-scale", glowScale.toString())
       }
     } else {
       blobCoreRef.current.style.filter = "brightness(1.1) contrast(1.2)"
@@ -85,22 +97,28 @@ function App(): JSX.Element {
 
       if (blobEdgeRef.current) {
         blobEdgeRef.current.style.opacity = "0.2"
-        blobEdgeRef.current.style.animationDuration = "15s"
+        blobEdgeRef.current.style.animationDuration = "20s" // Increased from 15s to 20s
       }
 
       if (blobHighlightRef.current) {
         blobHighlightRef.current.style.opacity = "0.6"
       }
+
+      // Reset glow properties when not listening
+      if (blobContainerRef.current) {
+        blobContainerRef.current.style.removeProperty("--glow-opacity")
+        blobContainerRef.current.style.removeProperty("--glow-scale")
+      }
     }
   }, [isListening, audioLevel])
 
-  // Update blob scaling based on audio level - more responsive
+  // Update blob scaling based on audio level - MORE DRAMATIC
   useEffect(() => {
     if (!blobRef.current) return
 
     if (isListening) {
-      // Apply more responsive scaling based on audio level
-      const scale = 1 + Math.min(0.15, audioLevel * 0.004)
+      // Apply more dramatic scaling based on audio level
+      const scale = 1 + Math.min(0.25, audioLevel * 0.005) // Increased from 0.12 to 0.25 and from 0.003 to 0.005
       blobRef.current.style.transform = `scale(${scale})`
     } else {
       blobRef.current.style.transform = "scale(1)"
@@ -132,9 +150,10 @@ function App(): JSX.Element {
 
     setLogEntries((prev) => [...prev, newEntry])
 
-    // Scroll to bottom of log container
+    // Scroll to bottom of log container when expanded
+    // This ensures the most recent messages are visible
     setTimeout(() => {
-      if (logContainerRef.current) {
+      if (logContainerRef.current && isExpanded) {
         logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight
       }
     }, 100)
@@ -191,7 +210,7 @@ function App(): JSX.Element {
     setAudioLevel(0)
   }
 
-  // Update the analyzeAudio function to be more responsive
+  // Update the analyzeAudio function with HIGHER THRESHOLD:
   const analyzeAudio = () => {
     if (!analyserRef.current) return
 
@@ -214,21 +233,22 @@ function App(): JSX.Element {
       // Normalize to 0-100 range with more amplification
       const normalizedLevel = Math.min(100, Math.max(0, avg * 2.5))
 
-      // Normalize to 0-100 range and apply more amplification for better responsiveness
-      const normalizedLevel = Math.min(100, Math.max(0, avg * 4)) // Increased from 3 to 4
+      // Normalize to 0-100 range with balanced amplification
+      const normalizedLevel = Math.min(100, Math.max(0, avg * 3.5)) // Keep the same amplification
 
-      // Apply smoother transitions but ensure it returns to calm state
+      // Apply balanced transitions
       setAudioLevel((prevLevel) => {
-        // If current level is lower, return to calm state faster
+        // If current level is lower, return to calm state at balanced pace
         if (normalizedLevel < prevLevel) {
-          return prevLevel * 0.7 + normalizedLevel * 0.3 // Faster decay (was 0.8/0.2)
+          return prevLevel * 0.75 + normalizedLevel * 0.25
         } else {
-          return prevLevel * 0.4 + normalizedLevel * 0.6 // Faster response to increases (was 0.5/0.5)
+          return prevLevel * 0.5 + normalizedLevel * 0.5
         }
       })
 
-      // Detect significant audio for log entries
-      if (normalizedLevel > 50 && Math.random() > 0.995) {
+      // Detect significant audio for log entries - HIGHER THRESHOLD
+      if (normalizedLevel > 75 && Math.random() > 0.996) {
+        // Increased from 55 to 75
         const phrases = [
           "Opening your calendar",
           "Checking the weather",
@@ -284,6 +304,15 @@ function App(): JSX.Element {
     // Toggle the expanded state
     setIsExpanded(!isExpanded)
 
+    // When expanding, scroll to the bottom to show most recent messages
+    if (!isExpanded) {
+      setTimeout(() => {
+        if (logContainerRef.current) {
+          logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight
+        }
+      }, 100)
+    }
+
     // Reset the flag after a short delay to prevent rapid toggling
     setTimeout(() => {
       isTogglingRef.current = false
@@ -332,7 +361,11 @@ function App(): JSX.Element {
 
       <div className="mic-container">
         {/* Fluid Blob Orb with oily effect */}
-        <div className={`fluid-blob-container ${isListening ? "active" : "inactive"}`} onClick={toggleMicrophone}>
+        <div
+          className={`fluid-blob-container ${isListening ? "active" : "inactive"}`}
+          onClick={toggleMicrophone}
+          ref={blobContainerRef}
+        >
           <div className="fluid-blob" ref={blobRef}>
             <div className="blob-core" ref={blobCoreRef}></div>
             <div className="blob-highlight" ref={blobHighlightRef}></div>
@@ -344,46 +377,48 @@ function App(): JSX.Element {
 
       {isExpanded && (
         <div className="log-container" ref={logContainerRef}>
-          {logEntries.map((entry) => (
-            <div key={entry.id} className={`log-entry ${entry.type}`}>
-              <div className="log-entry-content">
-                <div className="log-entry-icon">
-                  {entry.type === "input" ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                      <line x1="12" y1="19" x2="12" y2="23"></line>
-                      <line x1="8" y1="23" x2="16" y2="23"></line>
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                  )}
+          <div className="log-entries-wrapper">
+            {logEntries.map((entry) => (
+              <div key={entry.id} className={`log-entry ${entry.type}`}>
+                <div className="log-entry-content">
+                  <div className="log-entry-icon">
+                    {entry.type === "input" ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                      </svg>
+                    )}
+                  </div>
+                  <div className="log-entry-text">{entry.text}</div>
+                  <div className="log-entry-time">{formatTime(entry.timestamp)}</div>
                 </div>
-                <div className="log-entry-text">{entry.text}</div>
-                <div className="log-entry-time">{formatTime(entry.timestamp)}</div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 

@@ -96,12 +96,19 @@ html {
   padding: 8px 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
   z-index: 1;
   margin-top: 30px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: transparent !important;
+  border-radius: var(--border-radius);
+}
+
+.log-entries-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto; /* This pushes content to the bottom */
 }
 
 .log-container::-webkit-scrollbar {
@@ -120,20 +127,22 @@ html {
 .log-entry {
   padding: 8px 12px;
   border-radius: 8px;
-  background-color: rgba(40, 40, 40, 0.5);
+  background-color: rgba(20, 20, 30, 0.6); /* Increased opacity for better contrast */
   transition: all var(--transition-speed) ease;
   animation: fadeIn 0.3s ease-out;
   border-left: 3px solid transparent;
+  backdrop-filter: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Added shadow for better visibility */
 }
 
 .log-entry.input {
-  background-color: rgba(0, 132, 255, 0.15);
-  border-left: 3px solid rgba(0, 132, 255, 0.5);
+  background-color: rgba(0, 132, 255, 0.25); /* Increased opacity */
+  border-left: 3px solid rgba(0, 132, 255, 0.7); /* Increased opacity */
 }
 
 .log-entry.response {
-  background-color: rgba(110, 47, 235, 0.1);
-  border-left: 3px solid rgba(110, 47, 235, 0.5);
+  background-color: rgba(110, 47, 235, 0.25); /* Increased opacity */
+  border-left: 3px solid rgba(110, 47, 235, 0.7); /* Increased opacity */
 }
 
 .log-entry-content {
@@ -147,22 +156,17 @@ html {
   height: 18px;
   flex-shrink: 0;
   color: var(--text-secondary);
-  opacity: 0.7;
-  transition: transform 0.1s ease-out;
+  opacity: 0.8; /* Increased opacity */
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3)); /* Added shadow to icon */
 }
 
-.ring-1 {
-  width: 100px;
-  height: 100px;
-  border: 2px solid #3498db;
-  animation: pulse 2s infinite;
-}
-
-.ring-2 {
-  width: 140px;
-  height: 140px;
-  border: 2px solid #3498db;
-  animation: pulse 2s infinite 0.3s;
+.log-entry-text {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 500; /* Made text slightly bolder */
+  color: rgba(255, 255, 255, 0.95); /* Increased opacity for better contrast */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Enhanced text shadow */
 }
 
 .status-indicator {
@@ -170,10 +174,9 @@ html {
   padding: 8px 0;
   text-align: center;
   font-size: 12px;
-  color: var(--text-secondary);
-  background-color: transparent !important;
-  border-top: none;
-  z-index: 10;
+  color: rgba(220, 220, 220, 0.8); /* Lighter color with higher opacity */
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Enhanced text shadow */
 }
 
 @keyframes pulse {
