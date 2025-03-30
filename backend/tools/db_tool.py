@@ -38,6 +38,7 @@ def search_sentences(query: str, k: int = 1) -> str:
         results = vectorstore.similarity_search(query, k=1)
         # Format results
         formatted_results = "\n".join([f"- {doc.page_content}" for doc in results])
+        print(formatted_results)
         return f"Found {len(results)} similar sentences:\n{formatted_results}"
     except Exception as e:
         return f"Error searching sentences: {e}"

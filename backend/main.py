@@ -39,7 +39,7 @@ def build_graph() -> StateGraph:
     graph_builder.add_node("browser_agent", browser_agent)
     graph_builder.add_node("computer_agent", computer_agent)
     
-    graph_builder.add_node("db_tools", ToolNode(tools=[db_retriever_tool]))
+    graph_builder.add_node("db_tools", ToolNode(tools=[store_sentence, search_sentences, list_all_sentences]))
     graph_builder.add_node("browser_tools", ToolNode(tools=[browseruse_tool]))
     graph_builder.add_node("computer_tools", ToolNode(tools=[computeruse_tool]))
     
