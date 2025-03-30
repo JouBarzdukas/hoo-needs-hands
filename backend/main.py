@@ -1,4 +1,3 @@
-import sys
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 
@@ -16,61 +15,42 @@ from tools.db_tool import db_retriever_tool
 from tools.browseruse_tool import browseruse_tool
 from tools.computeruse_tool import computeruse_tool
 
+# Import voice activation and text-to-speech functions.
+from voice.voice_activation import get_voice_command
+from voice.text_to_speech import text_to_speech
+
 # Define the shared state schema.
 class State(TypedDict):
-    messages: list  # Each message is a dict or AIMessage with a 'content' field.
-    # 'steps' holds parsed sub-tasks; 'current_command' stores the active command.
+    messages: list  # Each message is a dict with a 'content' field.
 
 def build_graph() -> StateGraph:
-    """
-    Build a simple flow:
-      1) Start -> master_agent
-      2) master_agent can route to one of db_agent, browser_agent, computer_agent
-      3) Each agent can optionally call a single tool node
-      4) After the tool, return to END
-      5) End when agent says done
-    """
     graph_builder = StateGraph(State)
     graph_builder.add_node("master_agent", master_agent)
     graph_builder.add_node("db_agent", db_agent)
     graph_builder.add_node("browser_agent", browser_agent)
     graph_builder.add_node("computer_agent", computer_agent)
     
-    # Add separate tool nodes for each subordinate agent.
     graph_builder.add_node("db_tools", ToolNode(tools=[db_retriever_tool]))
     graph_builder.add_node("browser_tools", ToolNode(tools=[browseruse_tool]))
     graph_builder.add_node("computer_tools", ToolNode(tools=[computeruse_tool]))
     
-    # Set up control flow.
     graph_builder.add_edge(START, "master_agent")
-    
-    # For each subordinate agent, add conditional edges to route tool calls or end.
     graph_builder.add_conditional_edges(
         "db_agent",
         tools_condition,
-        {
-            "tools": "db_tools",
-            END: END  # If no tool call is needed, end
-        }
+        {"tools": "db_tools", END: END}
     )
     graph_builder.add_conditional_edges(
         "browser_agent",
         tools_condition,
-        {
-            "tools": "browser_tools",
-            END: END
-        }
+        {"tools": "browser_tools", END: END}
     )
     graph_builder.add_conditional_edges(
         "computer_agent",
         tools_condition,
-        {
-            "tools": "computer_tools",
-            END: END
-        }
+        {"tools": "computer_tools", END: END}
     )
     
-    # After tool execution, end the flow
     graph_builder.add_edge("db_tools", END)
     graph_builder.add_edge("browser_tools", END)
     graph_builder.add_edge("computer_tools", END)
@@ -88,22 +68,20 @@ def visualize_graph(graph: StateGraph):
         print("Visualization not available. Error:", e)
 
 def main():
+    # Run voice activation to obtain the command.
+    command = get_voice_command()
+    print("Voice command obtained:", command)
+    
     graph = build_graph()
     visualize_graph(graph)
     
-    print("Enter your command (type 'quit' or 'exit' to stop):")
-    while True:
-        user_input = input("Command: ").strip()
-        if user_input.lower() in ["quit", "exit"]:
-            print("Exiting.")
-            break
-        
-        # Construct the initial state from the user input.
-        initial_state: State = {"messages": [{"role": "user", "content": user_input}]}
-        
-        # Run the graph on the provided state and print each event in sequence.
-        for event in graph.stream(initial_state):
-            print("Graph event:", event)
+    # Seed the graph with the voice command.
+    initial_state: State = {"messages": [{"role": "user", "content": command}]}
+    for event in graph.stream(initial_state):
+        print("Graph event:", event)
+    
+    # Optionally, indicate that processing is complete.
+    text_to_speech("All tasks complete", voice="af_heart", sample_rate=24000)
 
 if __name__ == "__main__":
     main()

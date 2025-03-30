@@ -17,6 +17,7 @@ def record_until_stop(audio_stream, porcupine, sample_rate):
         frames.append(pcm)
         pcm_int = np.frombuffer(pcm, dtype=np.int16)
         keyword_index = porcupine.process(pcm_int)
+        # Here, keyword_index==1 is used for the stop phrase.
         if keyword_index == 1:
             print("Stop keyword 'Okay, done!' detected.")
             break
@@ -24,42 +25,34 @@ def record_until_stop(audio_stream, porcupine, sample_rate):
 
 def transcribe_audio_from_bytes(audio_bytes, sample_rate):
     client = OpenAI()
-    # Convert raw PCM audio bytes into a proper WAV file in memory.
+    # Build a proper WAV file in memory
     wav_buffer = io.BytesIO()
     with wave.open(wav_buffer, 'wb') as wf:
-        wf.setnchannels(1)     # mono audio
-        wf.setsampwidth(2)     # pyaudio.paInt16 is 2 bytes per sample
+        wf.setnchannels(1)     # mono
+        wf.setsampwidth(2)     # 16-bit audio
         wf.setframerate(sample_rate)
         wf.writeframes(audio_bytes)
     wav_buffer.seek(0)
-    wav_buffer.name = "audio.wav"  # necessary so that OpenAI recognizes the format
+    wav_buffer.name = "audio.wav"  # necessary for the OpenAI API to detect format
     text = client.audio.transcriptions.create(
-        model="gpt-4o-mini-transcribe",  # Use your desired model
-        # model = "whisper-1",
+        model="gpt-4o-mini-transcribe",  # or "whisper-1", adjust as needed
         file=wav_buffer,
         response_format="text"
     )
-    lower_text = text.lower()
-    # Optionally, strip the start ("jarvis") and end ("blueberry") keywords:
-    # if lower_text.startswith("jarvis"):
-    #     text = text[len("jarvis"):].strip(" ,:-")
-    # if lower_text.endswith("blueberry"):
-    #     text = text[:-len("blueberry")].strip(" ,:-")
     return text
 
-def send_to_main(sentence):
-    print(f"Sending to main: {sentence}")
-
-def main():
-    # Retrieve access key from environment
+def get_voice_command() -> str:
+    # Get the Picovoice access key from the environment.
     access_key = os.environ.get("PV_ACCESS_KEY")
     if not access_key:
-        raise ValueError("PV_ACCESS_KEY environment variable not set. Please set it in your .env file one directory up.")
-
-    # Configure Porcupine with two keywords: one for the start ("jarvis") and one for the end ("blueberry")
+        raise ValueError("PV_ACCESS_KEY environment variable not set.")
+    
+    # Use two keywords:
+    # index 0: wake word ("jarvis")
+    # index 1: stop phrase ("blueberry" used as placeholder for "Okay, done!")
     keywords = ["jarvis", "blueberry"]
     porcupine = pvporcupine.create(access_key, keywords=keywords)
-    
+
     pa = pyaudio.PyAudio()
     audio_stream = pa.open(
         rate=porcupine.sample_rate,
@@ -68,37 +61,31 @@ def main():
         input=True,
         frames_per_buffer=porcupine.frame_length
     )
-    
+
     print("Listening for the wake word 'Jarvis'...")
+    command = ""
     try:
         while True:
             pcm = audio_stream.read(porcupine.frame_length)
             pcm_int = np.frombuffer(pcm, dtype=np.int16)
             keyword_index = porcupine.process(pcm_int)
-            # keyword_index 0 corresponds to the wake keyword ("jarvis")
+            # When wake word is detected (index 0), start recording.
             if keyword_index == 0:
                 print("Wake word 'Jarvis' detected. Starting recording.")
                 audio_data = record_until_stop(audio_stream, porcupine, porcupine.sample_rate)
-                # Transcribe without saving to disk – use in-memory WAV conversion.
                 transcription = transcribe_audio_from_bytes(audio_data, porcupine.sample_rate)
-                print("Transcription:", transcription)
-                # If the transcription is exactly "Okay, done!" (or you can customize the stop phrase), exit the loop.
-                if transcription.strip().lower() == "okay, done!":
-                    print("Exit command received. Terminating...")
-                    break
-                confirm = input("Is this what you meant? (yes/no): ")
-                if confirm.lower() in ["yes", "y"]:
-                    send_to_main(transcription)
-                else:
-                    print("Let's try again.")
-                print("\nListening for the wake word 'Jarvis'...")
+                print("Voice command transcription:", transcription)
+                command = transcription.strip()
+                break
     except KeyboardInterrupt:
-        print("Exiting...")
+        print("Voice activation interrupted.")
     finally:
         audio_stream.stop_stream()
         audio_stream.close()
         pa.terminate()
         porcupine.delete()
+    return command
 
 if __name__ == "__main__":
-    main()
+    cmd = get_voice_command()
+    print("Final command:", cmd)
