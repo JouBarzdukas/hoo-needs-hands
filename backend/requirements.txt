@@ -26,3 +26,9 @@ browser_use>=0.0.1         # if this is an external dependency
 kokoro>=0.0.1              # check the correct package/version
 langchain_text_splitters>=0.0.1  # adjust version if needed
 langchain_community>=0.0.1       # adjust version if needed
+
+# Additional dependencies from imports
+typing-extensions>=4.0.0
+langgraph>=0.0.1           # already included above
+openai>=0.27.0             # already included above
+pyaudio>=0.2.11            # already included above
