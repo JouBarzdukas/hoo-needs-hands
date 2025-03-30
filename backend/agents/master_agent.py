@@ -27,12 +27,11 @@ def master_agent(state: dict) -> Command:
         f"You are the master agent. The user command is: '{initial_command}'.\n"
         "Determine which agent should handle this command. The possible agents are:\n"
         "- browser_agent: for web browsing, searching, and opening websites\n"
-        "- computer_agent: for opening applications, files, or system operations\n"
-        "- db_agent: for storing, searching, and managing sentences\n"
+        # "- computer_agent: for opening applications, files, or system operations\n"
+        "- db_agent: for storing, searching, and managing personal information\n"
         "- general_knowledge_agent: for answering general questions and providing a text-to-speech answer\n"
         "Respond with ONLY the agent name, nothing else.\n"
-        "Example: general_knowledge_agent\n\n"
-        "Note: Any operations related to storing, searching, or listing sentences should be handled by db_agent."
+        "Example: general_knowledge_agent\n"
     )
     
     # Create a new messages list with the prompt.

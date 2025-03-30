@@ -18,7 +18,7 @@ def db_agent(state: dict) -> Command:
     prompt = (
         f"You are the DB agent. Process the following command: '{command}'.\n"
         "If the user wants to store a sentence, output a tool_call with the tool name 'store_sentence' and arguments as a JSON object with a key 'sentence' containing the command.\n"
-        "If the user wants to search for similar sentences, output a tool_call with the tool name 'search_sentences' and arguments as a JSON object with a key 'query' containing the command.\n"
+        "If the user wants to search, fetch, or retrieve or something, output a tool_call with the tool name 'search_sentences' and arguments as a JSON object with a key 'query' containing the command.\n"
         "Do not wrap the arguments in any other keys.\n"
         "Do not include any other text in your response."
     )
