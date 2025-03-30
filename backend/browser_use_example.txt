@@ -1,0 +1,60 @@
+INFO     [browser_use] BrowserUse logging setup complete with level info
+INFO     [root] Anonymized telemetry enabled. See https://docs.browser-use.com/development/telemetry for more information.
+Graph visualization saved as 'graph.png' in the current directory.
+Listening for the wake word 'Jarvis'...
+Wake word 'Jarvis' detected. Starting recording.
+Recording... Speak now. (Say 'blueberry' to finish recording)
+Stop keyword 'blueberry' detected.
+Voice command transcription: Open YouTube.
+
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+Segment 0: Please confirm the following task: Open YouTube.. Say yes or no., plˈiz kənfˈɜɹm ðə fˈɑlOɪŋ tˈæsk: ˈOpᵊn jˈutˌub.. sˈA jˈɛs ɔɹ nˈO.
+Waiting for confirmation...
+Confirmation response: Dostanap.
+
+Voice command obtained: Open YouTube.
+Should execute command: False
+Command execution cancelled by user.
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+Segment 0: Command cancelled, kəmˈænd kˈænsᵊld
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+Segment 0: Let me know if you need anything else, lˈɛt mˌi nˈO ɪf ju nˈid ˈɛniθˌɪŋ ˈɛls
+Listening for the wake word 'Jarvis'...
+Wake word 'Jarvis' detected. Starting recording.
+Recording... Speak now. (Say 'blueberry' to finish recording)
+Stop keyword 'blueberry' detected.
+Voice command transcription: Open YouTube.
+
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+Segment 0: Please confirm the following task: Open YouTube.. Say yes or no., plˈiz kənfˈɜɹm ðə fˈɑlOɪŋ tˈæsk: ˈOpᵊn jˈutˌub.. sˈA jˈɛs ɔɹ nˈO.
+Waiting for confirmation...
+Confirmation response: Yes.
+
+Voice command obtained: Open YouTube.
+Should execute command: True
+Graph event: {'master_agent': {'messages': [{'role': 'user', 'content': 'Open YouTube.'}]}}
+DEBUG: Current command in browser_agent: 'Open YouTube.'
+DEBUG: Command received in browseruse_tool: 'Open YouTube.'
+DEBUG: Formatted command being passed to BrowserAgent: 'Open YouTube.'
+INFO     [agent] 🚀 Starting task: Open YouTube.
+INFO     [agent] 📍 Step 1
+INFO     [browser] Reusing existing Chrome instance
+INFO     [agent] 🤷 Eval: Unknown - Starting from a blank page.
+INFO     [agent] 🧠 Memory: Start from blank page. Open YouTube.
+INFO     [agent] 🎯 Next goal: Open YouTube in a new tab.
+INFO     [agent] 🛠️  Action 1/1: {"open_tab":{"url":"https://www.youtube.com"}}
+INFO     [controller] 🔗  Opened new tab with https://www.youtube.com
+INFO     [agent] 📍 Step 2
+INFO     [agent] 👍 Eval: Success - YouTube is already open in the new tab.
+INFO     [agent] 🧠 Memory: YouTube is open. Task finished and 1 out of 1 completed.
+INFO     [agent] 🎯 Next goal: Complete the task.
+INFO     [agent] 🛠️  Action 1/1: {"done":{"text":"YouTube has been successfully opened in a new tab.","success":true}}
+INFO     [agent] 📄 Result: YouTube has been successfully opened in a new tab.
+INFO     [agent] ✅ Task completed
+INFO     [agent] ✅ Successfully
+Graph event: {'browser_agent': {'messages': [{'role': 'user', 'content': 'Open YouTube.'}, {'role': 'assistant', 'content': "Browser Agent: Executed command 'Open YouTube.'. Result: AgentHistoryList(all_results=[ActionResult(is_done=False, success=None, extracted_content='🔗  Opened new tab with https://www.youtube.com', error=None, include_in_memory=True), ActionResult(is_done=True, success=True, extracted_content='YouTube has been successfully opened in a new tab.', error=None, include_in_memory=False)], all_model_outputs=[{'open_tab': {'url': 'https://www.youtube.com'}, 'interacted_element': None}, {'done': {'text': 'YouTube has been successfully opened in a new tab.', 'success': True}, 'interacted_element': None}])"}]}}
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+Segment 0: Task completed, tˈæsk kəmplˈiTᵻd
+WARNING: Defaulting repo_id to hexgrad/Kokoro-82M. Pass repo_id='hexgrad/Kokoro-82M' to suppress this warning.
+Segment 0: Let me know if you need anything else, lˈɛt mˌi nˈO ɪf ju nˈid ˈɛniθˌɪŋ ˈɛls
+Listening for the wake word 'Jarvis'...
