@@ -220,18 +220,12 @@ function App(): JSX.Element {
     const updateAudioLevel = () => {
       analyser.getByteFrequencyData(dataArray)
 
-      // Calculate average volume level with more weight to higher frequencies
+      // Calculate average volume level
       let sum = 0
-      let weightedSum = 0
       for (let i = 0; i < dataArray.length; i++) {
-        const weight = 1 + i / dataArray.length // Higher frequencies get more weight
-        weightedSum += dataArray[i] * weight
-        sum += weight
+        sum += dataArray[i]
       }
-      const avg = weightedSum / sum
-
-      // Normalize to 0-100 range with more amplification
-      const normalizedLevel = Math.min(100, Math.max(0, avg * 2.5))
+      const avg = sum / dataArray.length
 
       // Normalize to 0-100 range with balanced amplification
       const normalizedLevel = Math.min(100, Math.max(0, avg * 3.5)) // Keep the same amplification

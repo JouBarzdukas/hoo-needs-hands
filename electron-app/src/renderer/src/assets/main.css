@@ -51,28 +51,54 @@ html {
   backdrop-filter: none;
 }
 
-.mic-button {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+.app-container.expanded {
+  height: 400px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  border-bottom: none;
+  z-index: 10;
+  background-color: transparent !important;
+}
+
+/* Placeholder for the removed title to maintain layout */
+.app-title-placeholder {
+  flex: 1;
+}
+
+.app-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.control-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  transition: all var(--transition-speed) ease;
+  padding: 0;
 }
 
-.mic-button.active {
-  background-color: #3498db;
-  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.5);
+.control-button:hover {
+  color: var(--text-color);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-.mic-button.inactive {
-  background-color: #95a5a6;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+.control-button svg {
+  width: 16px;
+  height: 16px;
 }
 
 .mic-container {
@@ -169,24 +195,28 @@ html {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Enhanced text shadow */
 }
 
-.status-indicator {
-  width: 100%;
-  padding: 8px 0;
-  text-align: center;
+.log-entry-time {
   font-size: 12px;
   color: rgba(220, 220, 220, 0.8); /* Lighter color with higher opacity */
   white-space: nowrap;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); /* Enhanced text shadow */
 }
 
-@keyframes pulse {
-  0% {
-    opacity: 0.7;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
   }
-  50% {
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0.7;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
+
+/* Responsive adjustments */
+@media (max-height: 600px) {
+  .app-container.expanded {
+    height: 350px;
+  }
+}
+
