@@ -23,7 +23,7 @@ from voice.voice_activation import (
     transcribe_audio_from_bytes,
     is_affirmative_response
 )
-from voice.text_to_speech import text_to_speech
+from voice.text_to_speech import text_to_speech, random_auto_response
 
 # Import OpenAI for GPT-3.5-turbo
 from openai import OpenAI
@@ -133,7 +133,7 @@ def main():
             print("Command execution cancelled by user.")
             text_to_speech("Command cancelled", voice="af_heart", sample_rate=24000)
         else:
-            
+            random_auto_response()
             # Seed the graph with the voice command.
             initial_state: State = {"messages": [{"role": "user", "content": command}]}
             for event in graph.stream(initial_state):
