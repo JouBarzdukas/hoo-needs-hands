@@ -29,23 +29,24 @@ def master_agent(state: dict) -> Command:
         "- browser_agent: for web browsing, searching, and opening websites\n"
         "- computer_agent: for opening applications, files, or system operations\n"
         "- db_agent: for storing, searching, and managing sentences\n"
+        "- general_knowledge_agent: for answering general questions and providing a text-to-speech answer\n"
         "Respond with ONLY the agent name, nothing else.\n"
-        "Example: db_agent\n\n"
+        "Example: general_knowledge_agent\n\n"
         "Note: Any operations related to storing, searching, or listing sentences should be handled by db_agent."
     )
     
-    # Create a new messages list with the prompt
+    # Create a new messages list with the prompt.
     messages = [{"role": "user", "content": prompt}]
     response_obj = master_llm.invoke(messages)
     agent_name = response_obj.content.strip().lower()
     
-    # Add a debug message for the conversation
+    # Add a debug message for the conversation.
     delegation_msg = {
         "role": "assistant",
         "content": f"Master Agent: Delegating to {agent_name} - '{initial_command}'."
     }
     
-    # Create the new state with the initial command and messages
+    # Create the new state with the initial command and messages.
     new_state = {
         "messages": [initial_msg],
         "current_command": initial_command
