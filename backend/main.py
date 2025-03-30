@@ -1,5 +1,5 @@
 import sys
-from typing_extensions import TypedDict
+from typing_extensions import TypedDict, Annotated
 from langgraph.graph import StateGraph, START, END
 
 # Import agent functions.
@@ -12,23 +12,23 @@ from agents.computer_agent import computer_agent
 from langgraph.prebuilt import ToolNode, tools_condition
 
 # Import our tool functions.
-from tools.db_tool import db_retriever_tool
+from tools.db_tool import store_sentence, search_sentences, list_all_sentences
 from tools.browseruse_tool import browseruse_tool
 from tools.computeruse_tool import computeruse_tool
 
 # Define the shared state schema.
 class State(TypedDict):
-    messages: list  # Each message is a dict or AIMessage with a 'content' field.
-    # 'steps' holds parsed sub-tasks; 'current_command' stores the active command.
+    messages: Annotated[list, "messages"]  # Each message is a dict (or AIMessage) with a 'content' field.
+    # Additional keys (like 'current_command') can be added as needed.
 
 def build_graph() -> StateGraph:
     """
     Build a simple flow:
-      1) Start -> master_agent
-      2) master_agent can route to one of db_agent, browser_agent, computer_agent
-      3) Each agent can optionally call a single tool node
-      4) After the tool, return to END
-      5) End when agent says done
+      1) START -> master_agent
+      2) master_agent routes to one of db_agent, browser_agent, or computer_agent.
+      3) Each agent can optionally call a tool node.
+      4) After the tool, return to END.
+      5) End when the agent says done.
     """
     graph_builder = StateGraph(State)
     graph_builder.add_node("master_agent", master_agent)
@@ -37,7 +37,7 @@ def build_graph() -> StateGraph:
     graph_builder.add_node("computer_agent", computer_agent)
     
     # Add separate tool nodes for each subordinate agent.
-    graph_builder.add_node("db_tools", ToolNode(tools=[db_retriever_tool]))
+    graph_builder.add_node("sentence_tools", ToolNode(tools=[store_sentence, search_sentences, list_all_sentences]))
     graph_builder.add_node("browser_tools", ToolNode(tools=[browseruse_tool]))
     graph_builder.add_node("computer_tools", ToolNode(tools=[computeruse_tool]))
     
@@ -49,8 +49,8 @@ def build_graph() -> StateGraph:
         "db_agent",
         tools_condition,
         {
-            "tools": "db_tools",
-            END: END  # If no tool call is needed, end
+            "tools": "sentence_tools",
+            END: END  # If no tool call is needed, end.
         }
     )
     graph_builder.add_conditional_edges(
@@ -70,8 +70,8 @@ def build_graph() -> StateGraph:
         }
     )
     
-    # After tool execution, end the flow
-    graph_builder.add_edge("db_tools", END)
+    # After tool execution, end the flow.
+    graph_builder.add_edge("sentence_tools", END)
     graph_builder.add_edge("browser_tools", END)
     graph_builder.add_edge("computer_tools", END)
     

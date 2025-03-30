@@ -1,20 +1,31 @@
 from langchain_openai import ChatOpenAI
 from langgraph.types import Command
-from langgraph.graph import END
-from tools.db_tool import db_retriever_tool
+from tools.db_tool import store_sentence, search_sentences, list_all_sentences
 
 def db_agent(state: dict) -> Command:
     """
-    DB agent uses its LLM bound to the retriever tool to process the current command (state["current_command"]).
-    It produces an output message that includes a tool call if retrieval is needed.
+    The DB agent processes the current command and determines whether to store a sentence,
+    search for similar sentences, or list all stored sentences.
     """
-    llm = ChatOpenAI(model="gpt-4o")
-    llm_with_tools = llm.bind_tools([db_retriever_tool])
+    llm = ChatOpenAI(model="gpt-4")
+    # Bind the sentence store tools
+    llm_with_tools = llm.bind_tools([store_sentence, search_sentences, list_all_sentences])
+    
+    # Get the command from the user's message
+    user_message = state["messages"][0]
+    command = user_message.get("content", "") if isinstance(user_message, dict) else str(user_message)
+    
     prompt = (
-        f"You are the DB agent. Process the command: '{state.get('current_command', '')}'.\n"
-        "If you need to retrieve information, output a tool_call with name 'retrieve_blog_posts' and "
-        "arguments as a JSON object with a 'query' key. Otherwise, simply return the result."
+        f"You are the DB agent. Process the following command: '{command}'.\n"
+        "If the user wants to store a sentence, output a tool_call with the tool name 'store_sentence' and arguments as a JSON object with a key 'sentence' containing the command.\n"
+        "If the user wants to search for similar sentences, output a tool_call with the tool name 'search_sentences' and arguments as a JSON object with a key 'query' containing the command.\n"
+        "Do not wrap the arguments in any other keys.\n"
+        "Do not include any other text in your response."
     )
-    state["messages"].append({"role": "user", "content": prompt})
-    message = llm_with_tools.invoke(state["messages"])
-    return Command(goto="master_agent", update={"messages": [message]})
+
+    # Create a new messages list with the prompt
+    messages = [{"role": "user", "content": prompt}]
+    response = llm_with_tools.invoke(messages)
+    
+    # Return the command with the updated messages
+    return Command(goto="sentence_tools", update={"messages": state["messages"] + [response]})
