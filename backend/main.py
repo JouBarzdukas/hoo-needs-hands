@@ -16,8 +16,19 @@ from tools.browseruse_tool import browseruse_tool
 from tools.computeruse_tool import computeruse_tool
 
 # Import voice activation and text-to-speech functions.
-from voice.voice_activation import get_voice_command
+from voice.voice_activation import (
+    get_voice_command,
+    record_for_duration,
+    transcribe_audio_from_bytes,
+    is_affirmative_response
+)
 from voice.text_to_speech import text_to_speech
+
+# Import OpenAI for GPT-3.5-turbo
+from openai import OpenAI
+
+# Import pyaudio for audio recording
+import pyaudio
 
 # Define the shared state schema.
 class State(TypedDict):
@@ -76,21 +87,82 @@ def visualize_graph(graph: StateGraph):
     except Exception as e:
         print("Visualization not available. Error:", e)
 
+def is_end_conversation(text: str) -> bool:
+    client = OpenAI()
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that determines if a text response indicates wanting to end a conversation (yes) or continue (no). Respond with only 'true' or 'false'."},
+            {"role": "user", "content": f"Does this response indicate wanting to end the conversation (yes) or continue (no)? Text: {text}"}
+        ],
+        temperature=0.1
+    )
+    return response.choices[0].message.content.strip().lower() == 'true'
+
 def main():
-    # Run voice activation to obtain the command.
-    command = get_voice_command()
-    print("Voice command obtained:", command)
-    
-    graph = build_graph()
-    visualize_graph(graph)
-    
-    # Seed the graph with the voice command.
-    initial_state: State = {"messages": [{"role": "user", "content": command}]}
-    for event in graph.stream(initial_state):
-        print("Graph event:", event)
-    
-    # Optionally, indicate that processing is complete.
-    text_to_speech("All tasks complete", voice="af_heart", sample_rate=24000)
+    while True:
+        # Run voice activation to obtain the command.
+        should_execute, command, pa, porcupine = get_voice_command()
+        print("Voice command obtained:", command)
+        print("Should execute command:", should_execute)
+        
+        if not should_execute:
+            print("Command execution cancelled by user.")
+            text_to_speech("Command cancelled", voice="af_heart", sample_rate=24000)
+        else:
+            graph = build_graph()
+            # visualize_graph(graph)
+            
+            # Seed the graph with the voice command.
+            initial_state: State = {"messages": [{"role": "user", "content": command}]}
+            for event in graph.stream(initial_state):
+                print("Graph event:", event)
+            
+            # Indicate that processing is complete
+            text_to_speech("Task completed", voice="af_heart", sample_rate=24000)
+        
+        # Ask if user wants to end conversation
+        text_to_speech("Would you like to end this conversation? Say yes or no.", voice="af_heart", sample_rate=24000)
+        print("Waiting for conversation end confirmation...")
+        
+        # Record for 3 seconds to get response
+        confirmation_audio = record_for_duration(pa.open(
+            rate=porcupine.sample_rate,
+            channels=1,
+            format=pyaudio.paInt16,
+            input=True,
+            frames_per_buffer=porcupine.frame_length
+        ), porcupine, 3, porcupine.sample_rate)
+        
+        if confirmation_audio is None:
+            print("Failed to record end conversation confirmation")
+            # Clean up resources
+            if pa:
+                pa.terminate()
+            if porcupine:
+                porcupine.delete()
+            continue
+            
+        confirmation_text = transcribe_audio_from_bytes(confirmation_audio, porcupine.sample_rate)
+        print("End conversation response:", confirmation_text)
+        
+        if is_end_conversation(confirmation_text):
+            print("Ending conversation.")
+            text_to_speech("Goodbye!", voice="af_heart", sample_rate=24000)
+            # Clean up resources
+            if pa:
+                pa.terminate()
+            if porcupine:
+                porcupine.delete()
+            break
+        else:
+            print("Continuing conversation.")
+            text_to_speech("What else can I help you with?", voice="af_heart", sample_rate=24000)
+            # Clean up resources
+            if pa:
+                pa.terminate()
+            if porcupine:
+                porcupine.delete()
 
 if __name__ == "__main__":
     main()
