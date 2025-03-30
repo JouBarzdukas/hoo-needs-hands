@@ -1,0 +1,57 @@
+.
+├── LICENSE
+├── README.md
+├── electron-app
+│   ├── .editorconfig
+│   ├── .gitignore
+│   ├── .npmrc
+│   ├── .prettierignore
+│   ├── .prettierrc.yaml
+│   ├── .vscode
+│   │   ├── extensions.json
+│   │   ├── launch.json
+│   │   └── settings.json
+│   ├── README.md
+│   ├── build
+│   │   ├── entitlements.mac.plist
+│   │   ├── icon.icns
+│   │   ├── icon.ico
+│   │   └── icon.png
+│   ├── dev-app-update.yml
+│   ├── electron-builder.yml
+│   ├── electron.vite.config.ts
+│   ├── eslint.config.mjs
+│   ├── out
+│   │   ├── main
+│   │   │   └── index.js
+│   │   └── preload
+│   │       └── index.js
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── resources
+│   │   └── icon.png
+│   ├── src
+│   │   ├── main
+│   │   │   └── index.ts
+│   │   ├── preload
+│   │   │   ├── index.d.ts
+│   │   │   └── index.ts
+│   │   └── renderer
+│   │       ├── index.html
+│   │       └── src
+│   │           ├── App.tsx
+│   │           ├── assets
+│   │           │   ├── base.css
+│   │           │   ├── electron.svg
+│   │           │   ├── main.css
+│   │           │   └── wavy-lines.svg
+│   │           ├── components
+│   │           │   └── Versions.tsx
+│   │           ├── env.d.ts
+│   │           └── main.tsx
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── tsconfig.web.json
+└── structure.txt
+
+15 directories, 40 files

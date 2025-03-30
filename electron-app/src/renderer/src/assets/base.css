@@ -65,3 +65,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Remove any background colors from base.css */
+html,
+body {
+  background: transparent !important;
+}
+
+

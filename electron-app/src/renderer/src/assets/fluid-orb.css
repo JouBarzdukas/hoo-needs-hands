@@ -1,0 +1,288 @@
+:root {
+    /* Color palette inspired by Meta AI and Siri with a twist */
+    --deep-blue: #0a1c3d;
+    --electric-blue: #0084ff;
+    --vibrant-purple: #6e2feb;
+    --hot-pink: #ff3a8c;
+    --cyan-accent: #00e2e2;
+    --subtle-glow: rgba(0, 132, 255, 0.5);
+  
+    /* Gradient combinations */
+    --orb-gradient: radial-gradient(
+      circle at 30% 30%,
+      var(--electric-blue) 0%,
+      var(--vibrant-purple) 60%,
+      var(--deep-blue) 100%
+    );
+    --surface-gradient: linear-gradient(135deg, var(--electric-blue), var(--vibrant-purple), var(--hot-pink));
+    --edge-highlight: conic-gradient(
+      transparent 0deg,
+      var(--cyan-accent) 60deg,
+      var(--electric-blue) 120deg,
+      var(--vibrant-purple) 240deg,
+      var(--hot-pink) 300deg,
+      transparent 360deg
+    );
+  
+    /* Default glow values */
+    --glow-opacity: 0.5;
+    --glow-scale: 1;
+  }
+  
+  /* Fluid Blob Styles */
+  .fluid-blob-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin: 0 auto;
+  }
+  
+  .fluid-blob {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    transition: transform 0.2s ease-out;
+    will-change: transform;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  
+  /* Core blob with oily appearance */
+  .blob-core {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--orb-gradient);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 132, 255, 0.35), 0 0 20px rgba(110, 47, 235, 0.25), inset 0 0 15px
+      rgba(0, 226, 226, 0.35);
+    filter: brightness(1.08) contrast(1.15);
+    animation: blob-pulse 7s infinite alternate ease-in-out;
+    transition: all 0.25s ease;
+  }
+  
+  /* Subtle iridescent highlight */
+  .blob-highlight {
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 40%;
+    height: 40%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    filter: blur(4px);
+    opacity: 0.6;
+    animation: highlight-move 10s infinite alternate ease-in-out;
+  }
+  
+  /* Oily surface effect */
+  .blob-surface {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      transparent 20%,
+      rgba(0, 132, 255, 0.15) 40%,
+      rgba(110, 47, 235, 0.15) 60%,
+      rgba(255, 58, 140, 0.15) 80%,
+      transparent 100%
+    );
+    border-radius: 50%;
+    animation: surface-rotate 30s linear infinite;
+    opacity: 0.8;
+    mix-blend-mode: screen;
+  }
+  
+  /* Edge highlight to create the oily look */
+  .blob-edge {
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    background: var(--edge-highlight);
+    border-radius: 50%;
+    filter: blur(8px);
+    opacity: 0.2;
+    mix-blend-mode: screen;
+    animation: edge-rotate 20s linear infinite;
+  }
+  
+  /* NEW: Outer glow effect for active state */
+  .fluid-blob-container.active::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(0, 132, 255, 0.5) 0%,
+      rgba(110, 47, 235, 0.4) 40%,
+      rgba(0, 226, 226, 0.3) 60%,
+      transparent 80%
+    );
+    z-index: -1;
+    opacity: var(--glow-opacity, 0.5);
+    transform: scale(var(--glow-scale, 1));
+    animation: pulse-glow 2s infinite alternate ease-in-out;
+    filter: blur(5px);
+  }
+  
+  /* Active State - MORE DRAMATIC */
+  .fluid-blob-container.active {
+    transform: scale(1.08);
+  }
+  
+  .fluid-blob-container.active .blob-core {
+    filter: brightness(1.3) contrast(1.35);
+    box-shadow: 0 0 15px rgba(0, 132, 255, 0.65), 0 0 30px rgba(110, 47, 235, 0.45), inset 0 0 20px
+      rgba(0, 226, 226, 0.55);
+  }
+  
+  .fluid-blob-container.active .blob-edge {
+    opacity: 0.35;
+    animation: edge-rotate 12s linear infinite;
+  }
+  
+  /* NEW: Pulse glow animation */
+  @keyframes pulse-glow {
+    0% {
+      opacity: calc(var(--glow-opacity, 0.5) * 0.6);
+      transform: scale(calc(var(--glow-scale, 1) * 0.95));
+    }
+    50% {
+      opacity: var(--glow-opacity, 0.5);
+      transform: scale(var(--glow-scale, 1));
+    }
+    100% {
+      opacity: calc(var(--glow-opacity, 0.5) * 0.6);
+      transform: scale(calc(var(--glow-scale, 1) * 1.05));
+    }
+  }
+  
+  /* Animations - MORE DRAMATIC */
+  @keyframes blob-pulse {
+    0% {
+      transform: scale(0.97);
+      filter: brightness(1.0) contrast(1.1);
+    }
+    50% {
+      filter: brightness(1.12) contrast(1.22);
+    }
+    100% {
+      transform: scale(1);
+      filter: brightness(1.2) contrast(1.3);
+    }
+  }
+  
+  @keyframes highlight-move {
+    0% {
+      top: 15%;
+      left: 20%;
+      opacity: 0.6;
+      width: 40%;
+      height: 40%;
+    }
+    25% {
+      top: 10%;
+      left: 25%;
+      opacity: 0.75;
+      width: 35%;
+      height: 35%;
+    }
+    50% {
+      top: 20%;
+      left: 30%;
+      opacity: 0.85;
+      width: 30%;
+      height: 30%;
+    }
+    75% {
+      top: 25%;
+      left: 20%;
+      opacity: 0.75;
+      width: 35%;
+      height: 35%;
+    }
+    100% {
+      top: 15%;
+      left: 15%;
+      opacity: 0.6;
+      width: 40%;
+      height: 40%;
+    }
+  }
+  
+  @keyframes surface-rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes edge-rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(-360deg);
+    }
+  }
+  
+  /* State transition animation - MORE DRAMATIC */
+  .fluid-blob-container {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .fluid-blob-container.inactive {
+    animation: inactive-state 0.5s forwards;
+  }
+  
+  .fluid-blob-container.active {
+    animation: active-state 0.8s forwards;
+  }
+  
+  @keyframes inactive-state {
+    0% {
+      transform: scale(1.08);
+    }
+    30% {
+      transform: scale(0.93);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes active-state {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    75% {
+      transform: scale(0.96);
+    }
+    100% {
+      transform: scale(1.04);
+    }
+  }
+  
+  
