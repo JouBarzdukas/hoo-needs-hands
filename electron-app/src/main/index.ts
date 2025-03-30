@@ -1,6 +1,8 @@
-import { app, shell, BrowserWindow, ipcMain, screen } from "electron"
+import { app, shell, BrowserWindow, ipcMain, screen, Tray, Menu, nativeImage } from "electron"
 import { join } from "path"
 import { electronApp, optimizer, is } from "@electron-toolkit/utils"
+
+let tray: Tray;
 
 function createWindow(): void {
   const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize
@@ -73,6 +75,7 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
+  
   // IPC test
   ipcMain.on("ping", () => console.log("pong"))
 
@@ -83,6 +86,13 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  if (process.platform === "darwin" && app.dock) {
+    // const image = nativeImage.createFromPath('/Users/pradeepravi/Documents/hoo-needs-hands/electron-app/resources/icon2.png');
+    // const image = nativeImage.createFromPath(join(__dirname, 'icon2.png'))
+    const image = nativeImage.createFromPath('/Users/pradeepravi/Documents/hoo-needs-hands/electron-app/resources/icon2.png')
+    app.dock.setIcon(image);
+  }
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
