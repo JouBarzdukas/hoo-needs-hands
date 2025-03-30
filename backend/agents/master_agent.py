@@ -6,7 +6,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.types import Command
 
 # Initialize the master LLM.
-master_llm = ChatOpenAI(model="gpt-4", temperature=0)
+master_llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
 def master_agent(state: dict) -> Command:
     """

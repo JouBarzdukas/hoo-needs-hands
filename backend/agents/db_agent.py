@@ -7,7 +7,7 @@ def db_agent(state: dict) -> Command:
     The DB agent processes the current command and determines whether to store a sentence,
     search for similar sentences, or list all stored sentences.
     """
-    llm = ChatOpenAI(model="gpt-4")
+    llm = ChatOpenAI(model="gpt-4o")
     # Bind the sentence store tools
     llm_with_tools = llm.bind_tools([store_sentence, search_sentences, list_all_sentences])
     

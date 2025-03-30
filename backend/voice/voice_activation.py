@@ -32,7 +32,7 @@ def record_for_duration(audio_stream, porcupine, duration, sample_rate):
 def is_affirmative_response(text: str) -> bool:
     client = OpenAI()
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that determines if a text response is affirmative (yes) or negative (no). Respond with only 'true' or 'false'."},
             {"role": "user", "content": f"Is this response affirmative (yes) or negative (no)? Text: {text}"}
