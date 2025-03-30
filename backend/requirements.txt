@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # filepath: ..\hoo-needs-hands\backend\requirements.txt
 
 # Environment variables
