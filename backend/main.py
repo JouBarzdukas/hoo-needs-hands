@@ -14,7 +14,7 @@ from langgraph.prebuilt import ToolNode, tools_condition
 # Import our tool functions.
 from tools.db_tool import store_sentence, search_sentences, list_all_sentences
 from tools.browseruse_tool import browseruse_tool
-from tools.computeruse_tool import computeruse_tool
+from tools.general_knowledge_tool import general_knowledge_tool
 
 # Import voice activation and text-to-speech functions.
 from voice.voice_activation import (
@@ -54,6 +54,7 @@ def build_graph() -> StateGraph:
     
     graph_builder.add_node("db_tools", ToolNode(tools=[store_sentence, search_sentences, list_all_sentences]))
     graph_builder.add_node("browser_tools", ToolNode(tools=[browseruse_tool]))
+    graph_builder.add_node("general_knowledge_tools", ToolNode(tools=[general_knowledge_tool]))
     #graph_builder.add_node("computer_tools", ToolNode(tools=[computeruse_tool]))
     
     graph_builder.add_edge(START, "master_agent")
@@ -67,14 +68,30 @@ def build_graph() -> StateGraph:
         tools_condition,
         {"tools": "browser_tools", END: END}
     )
+    graph_builder.add_conditional_edges(
+        "general_knowledge_agent",
+        tools_condition,
+        {"tools": "general_knowledge_tools", END: END}
+    )
+
+    graph_builder.add_conditional_edges(
+        "master_agent",
+        tools_condition,
+        {
+            "browser_agent": "browser_agent",
+            "db_agent": "db_agent",
+            "general_knowledge_agent": "general_knowledge_agent",
+            END: END
+        }
+    )
+
     # graph_builder.add_conditional_edges(
     #     "computer_agent",
     #     tools_condition,
     #     {"tools": "computer_tools", END: END}
     # )
-    # For general knowledge agent, no tool node is required.
-    graph_builder.add_edge("general_knowledge_agent", END)
-    
+
+    graph_builder.add_edge("general_knowledge_tools", END)
     graph_builder.add_edge("db_tools", END)
     graph_builder.add_edge("browser_tools", END)
     # graph_builder.add_edge("computer_tools", END)
@@ -104,6 +121,8 @@ def is_end_conversation(text: str) -> bool:
     return response.choices[0].message.content.strip().lower() == 'true'
 
 def main():
+    graph = build_graph()
+    visualize_graph(graph)
     while True:
         # Run voice activation to obtain the command.
         should_execute, command, pa, porcupine = get_voice_command()
@@ -114,8 +133,6 @@ def main():
             print("Command execution cancelled by user.")
             text_to_speech("Command cancelled", voice="af_heart", sample_rate=24000)
         else:
-            graph = build_graph()
-            visualize_graph(graph)
             
             # Seed the graph with the voice command.
             initial_state: State = {"messages": [{"role": "user", "content": command}]}
