@@ -49,7 +49,7 @@ def build_graph() -> StateGraph:
     graph_builder.add_node("master_agent", master_agent)
     graph_builder.add_node("db_agent", db_agent)
     graph_builder.add_node("browser_agent", browser_agent)
-    graph_builder.add_node("computer_agent", computer_agent)
+    # graph_builder.add_node("computer_agent", computer_agent)
     graph_builder.add_node("general_knowledge_agent", general_knowledge_agent)
     
     graph_builder.add_node("db_tools", ToolNode(tools=[store_sentence, search_sentences, list_all_sentences]))
@@ -85,16 +85,16 @@ def build_graph() -> StateGraph:
         }
     )
 
-    graph_builder.add_conditional_edges(
-         "computer_agent",
-         tools_condition,
-         {"tools": "computer_tools", END: END}
-     )
+    # graph_builder.add_conditional_edges(
+    #      "computer_agent",
+    #      tools_condition,
+    #      {"tools": "computer_tools", END: END}
+    #  )
 
     graph_builder.add_edge("general_knowledge_tools", END)
     graph_builder.add_edge("db_tools", END)
     graph_builder.add_edge("browser_tools", END)
-    graph_builder.add_edge("computer_tools", END)
+   # graph_builder.add_edge("computer_tools", END)
     
     return graph_builder.compile()
 
@@ -125,6 +125,7 @@ def main():
     visualize_graph(graph)
     while True:
         # Run voice activation to obtain the command.
+        print("Listening for command...")
         should_execute, command, pa, porcupine = get_voice_command()
         print("Voice command obtained:", command)
         print("Should execute command:", should_execute)
